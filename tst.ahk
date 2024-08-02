@@ -1,3 +1,5 @@
+
+
 global iskeeping := false
 
 OnError(ErrorHandler)
@@ -10,14 +12,20 @@ ErrorHandler(Thrown, Mode) {
     ToolTip("")
 }
 
+F23::AppsKey
 
 global lastAD := 'a'
 
-CapsLock & o:: {
-    Send "{Shift Down}{F10}{shift up}"
-}
+CapsLock & o::AppsKey
+
 CapsLock & m:: {
     Send("{Control Down}{z}{Control Up}")
+}
+CapsLock & 9:: {
+    Send("{Control Down}{Left}{Control Up}")
+}
+CapsLock & 0:: {
+    Send("{Control Down}{Right}{Control Up}")
 }
 +BackSpace:: {
     Send("{Delete}")
