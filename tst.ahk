@@ -12,11 +12,27 @@ ErrorHandler(Thrown, Mode) {
     ToolTip("")
 }
 
-F23::AppsKey
+CapsLock & q::{
+     ; 调用Python脚本并获取剪贴板的第一个内容
+     output := RunPythonScript("pythonw", "process_clipboard.pyw")
+     ; 将Python脚本的输出复制到剪贴板
+     Send(output)
+}
+RunPythonScript(pythonPath, scriptPath) {
+    outputVar := ""
+    RunWait(pythonPath ' `"' scriptPath '`" ' A_ScriptDir  " Hide", outputVar)
+    return outputVar
+}
+
+; 通过powertoy映射目前可以将copilot键比较好的映射到Rctrl上，所以这个映射先取消 2024-11-22
+; F23::AppsKey
 
 global lastAD := 'a'
 
 CapsLock & o::AppsKey
+CapsLock & a:: {
+    Send("")
+}
 
 CapsLock & m:: {
     Send("{Control Down}{z}{Control Up}")
