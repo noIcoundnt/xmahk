@@ -1,9 +1,7 @@
 
 
-global iskeeping := false
-
+; 程序错误的回调函数，不过从来没看见他调用过(
 OnError(ErrorHandler)
-
 ErrorHandler(Thrown, Mode) {
     X := 20
     Y := 20
@@ -12,6 +10,7 @@ ErrorHandler(Thrown, Mode) {
     ToolTip("")
 }
 
+; 图片转为base64 img标签
 CapsLock & q::{
      ; 调用Python脚本并获取剪贴板的第一个内容
      output := RunPythonScript("pythonw", "process_clipboard.pyw")
@@ -27,51 +26,28 @@ RunPythonScript(pythonPath, scriptPath) {
 ; 通过powertoy映射目前可以将copilot键比较好的映射到Rctrl上，所以这个映射先取消 2024-11-22
 ; F23::AppsKey
 
-global lastAD := 'a'
 
+; 触发鼠标右键
 CapsLock & o::AppsKey
-CapsLock & a:: {
-    Send("")
-}
+; CapsLock & a:: {
+;     Send("")
+; }
 
+; 手中的键盘突然开始取消
 CapsLock & m:: {
     Send("{Control Down}{z}{Control Up}")
 }
-CapsLock & 9:: {
-    Send("{Control Down}{Left}{Control Up}")
-}
-CapsLock & 0:: {
-    Send("{Control Down}{Right}{Control Up}")
-}
+
+; 
 +BackSpace:: {
     Send("{Delete}")
 }
+; 删除word
 CapsLock & BackSpace:: {
     Send("{Control Down}{BackSpace}{Control Up}")
 }
 
-CapsLock & p:: {
-    ; Send("{Control Down}{z}{Control Up}")
-
-    if (IsSet(iskeeping))
-    {
-        ; 如果变量已被赋值，执行这里的代码
-        iskeeping := !iskeeping
-    }
-    else
-    {
-        ; 如果变量未被赋值，执行这里的代码
-        global iskeeping := false
-    }
-
-    X := 20
-    Y := 20
-    ToolTip("切换", X, Y)
-    Sleep(500)
-    ToolTip("")
-
-}
-
+; 挺进地牢的脚本，不太好用
 #HotIf WinActive("ahk_exe EtG.exe")
 LButton:: {
     ; if (iskeeping) {
@@ -104,9 +80,9 @@ LButton:: {
 #HotIf
 
 
-
+; 为了星座上升而写的脚本，暂时没啥用，不管了
+global lastAD := 'a'
 #HotIf WinActive("ahk_exe Astral Ascent.exe")
-
 RAlt::{
     Send ("{s Down}{w Down}")
     Sleep 50 ; 这里的延时是为了确保按键被“按下”，可以根据需要调整
@@ -126,7 +102,6 @@ RAlt::{
 ; 通过双击CapsLock键来切换大小写
 ; 暂时禁用，采用下方的alt+capslk方式发送capslk事件
 
-CapsLock:: return
 
 ; CapsLock::CapsLockDoubleClick()
 
@@ -142,58 +117,129 @@ CapsLock:: return
 ; }
 
 
-; 当前问题：capslk加一些未定义的按键，会触发capslk事件，导致大小写切换
+; 当前问题：capslk加一些未定义的按键，会触发capslk事件，导致大小写切换，不过本身键盘在处理没有组合键的时候就是这样的，所以也不用什么特别处理
 ; alt+capslk模拟capslk事件
 
+
+isShifted:=0
+
 !CapsLock:: SendInput ("{Blind}{CapsLock}")
+CapsLock:: {
+    if(isShifted == 0){
+        global isShifted
+        isShifted:=1
+
+        X := 20
+        Y := 20
+        ToolTip("当前的值是: " . isShifted, X, Y)  ; 显示进程名
+        ; Sleep(2000)
+        ToolTip("", X, Y)   
+        
+        return
+    }else{
+        isShifted:=0
+        
+    }
+}
+
+setShiftedState(){
+    global isShifted
+    isShifted:=0
+}
 
 ; 模拟右移到结尾
 CapsLock & `;:: {
-    if GetKeyState("Shift", "P")
+    if (GetKeyState("Shift", "P") || isShifted == 1) {
         Send("{Shift Down}{End}{Shift Up}")
-    else
+        SetTimer setShiftedState,-1000
+        
+    } else {        
         Send("{End}")
+    }
     return
 }
+
 ; 模拟左移到开头
 CapsLock & h:: {
-    if GetKeyState("Shift", "P")
+    if (GetKeyState("Shift", "P") || isShifted == 1) {
         Send("{Shift Down}{Home}{Shift Up}")
-    else
+        SetTimer setShiftedState,-1000
+        
+    } else {
         Send("{Home}")
+    }
     return
 }
+
 ; 模拟左键
 CapsLock & j:: {
-    if GetKeyState("Shift", "P")
+    if (GetKeyState("Shift", "P") || isShifted == 1) {
         Send("{Shift Down}{Left}{Shift Up}")
-    else
+        SetTimer setShiftedState,-1000
+    } else {
         Send("{Left}")
+    }
     return
 }
+
 ; 模拟下键
 CapsLock & k:: {
-    if GetKeyState("Shift", "P")
+    if (GetKeyState("Shift", "P") || isShifted == 1) {
         Send("{Shift Down}{Down}{Shift Up}")
-    else
-        Send("{Down}")
+        SetTimer setShiftedState,-1000
 
+    } else {
+        Send("{Down}")
+    }
     return
 }
+
 ; 模拟右键
 CapsLock & l:: {
-    if GetKeyState("Shift", "P")
+    if (GetKeyState("Shift", "P") || isShifted == 1) {
         Send("{Shift Down}{Right}{Shift Up}")
-    else
+        SetTimer setShiftedState,-1000
+
+    } else {
         Send("{Right}")
+    }
     return
 }
+
 ; 模拟上键
 CapsLock & i:: {
-    if GetKeyState("Shift", "P")
+    if (GetKeyState("Shift", "P") || isShifted == 1) {
         Send("{Shift Down}{Up}{Shift Up}")
-    else
+        SetTimer setShiftedState,-1000
+
+    } else {
         Send("{Up}")
+    }
+    return
+}
+
+; 模拟左跳word
+CapsLock & 9:: {
+    if (GetKeyState("Shift", "P") || isShifted == 1) {
+        Send("{Control Down}{Shift Down}{Left}{Shift Up}{Control Up}")
+        SetTimer setShiftedState,-1000
+
+    } else {
+        Send("{Control Down}{Left}{Control Up}")
+
+    }
+    return
+}
+; 模拟右跳word
+CapsLock & 0:: {
+    if (GetKeyState("Shift", "P") || isShifted == 1) {
+        Send("{Control Down}{Shift Down}{Right}{Shift Up}{Control Up}")
+        SetTimer setShiftedState,-1000
+
+    } else {
+        Send("{Control Down}{Right}{Control Up}")
+
+    }
     return
 }
 
@@ -216,44 +262,3 @@ CapsLock & w:: {
     return
 }
 
-
-; ; #HotIf WinActive('ahk_class Terraria.exe')
-; a:: {
-;     lastAD := 'a'
-;     Send("{Blind}a")
-;     return
-; }
-
-; d:: {
-;     lastAD := 'd'
-;     Send("{Blind}d")
-;     return
-; }
-
-; XButton1:: {
-;     X := 20
-;     Y := 20
-;     ToolTip("1触发", X, Y)
-;     Sleep(2000)
-;     ToolTip("")
-
-;     if (lastAD = 'a')
-;         SendInput("Blind a 2")
-;     else if (lastAD = 'd')
-;         Send("Blind d 2")
-;     return
-; }
-; XButton2:: {
-;     X := 20
-;     Y := 20
-;     ToolTip("2触发", X, Y)
-;     Sleep(2000)
-;     ToolTip("")
-
-;     if (lastAD = 'a')
-;         SendInput("Blind a 2")
-;     else if (lastAD = 'd')
-;         SendInput("Blind d 2")
-;     return
-; }
-; ; #HotIf
