@@ -28,7 +28,11 @@ RunPythonScript(pythonPath, scriptPath) {
 
 
 ; 触发鼠标右键
-CapsLock & o::AppsKey
+CapsLock & o::{
+    setShiftedState()
+    Send("{AppsKey}") ; 模拟按下应用键
+    
+}
 ; CapsLock & a:: {
 ;     Send("")
 ; }
