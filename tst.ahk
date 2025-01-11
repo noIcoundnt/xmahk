@@ -253,6 +253,15 @@ CapsLock & w:: {
     Send("{Control Down}{Shift Down}{Right}{Control Up}{Shift Up}")
     return
 }
+; 模拟前进
+CapsLock & <:: {
+    Send("{XButton1}")
+    return
+}
+CapsLock & >:: {
+    Send("{XButton2}")
+    return
+}
 
 ; 获取当前窗口名
 ^!t:: {
